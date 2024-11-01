@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from guest.models import   affiliates, annualreport, boardmembers, bylawtable, district, events, eventtype, institution, membershipsubscription, membershiptype, signup, states
+from guest.models import   affiliates, annualreport, boardmembers, bylawtable, district, events, eventtype, institution, membershipsubscription, membershiptype, payment, signup, states
 
 class stateSerializer(serializers.ModelSerializer):
     class Meta:
@@ -59,4 +59,10 @@ class EventsSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = events
+        fields = '__all__'
+class PaymentSerializer(serializers.ModelSerializer):
+    member=SignupSerializer()
+    membershiptype=MembershiptypeSerializer()
+    class Meta:
+        model = payment
         fields = '__all__'

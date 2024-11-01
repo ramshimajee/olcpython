@@ -1021,26 +1021,66 @@ def updateeventtype(request, data):
             return JsonResponse({"error": str(e)}, status=500)
     return JsonResponse({"error": "Invalid request."}, status=400) 
 
-@csrf_exempt
-def subscription(request,data=0):
-    if request.method=="POST":
-        email=request.POST.get('email')
-        password=request.POST.get('password')
+# @csrf_exempt
+# def subscription(request,data=0):
+#     if request.method=="POST":
+#         email=request.POST.get('email')
+#         password=request.POST.get('password')
+#         subscribeModel = subscribe.objects.filter(email=email,password=password)
+#         if subscribeModel.exists():
+#             for item in subscribeModel:
+#                 id=item.id
+#             print(id)
+#             return JsonResponse({"success":True,"id":id})
+#         else:
+#             return JsonResponse({"success":False})
+        
+        
        
-        membership=membershipsubscription.objects.get(id=data)
-        membershipprice=membership.price
-     
-        membership_type=membershiptype.objects.get(id=data)
-        membershipname=membership_type.membershiptypename
-        
-        subsriptiondetails={
-            'price':membershipprice,
-            'name':membershipname
+   
+    
+@csrf_exempt
+def addpayment(request, data=0):
+    if request.method=='POST':
+        try:
+            member = request.POST.get('member')
+            membershiptypes = request.POST.get('membershiptype')
+            price = request.POST.get('price')
+            payment_date = timezone.now().date()
+            payment_status = "Payment Done"
+            print(member)
+            print(membershiptypes)
+            print(price)
+            print(payment_date)
+            print(payment_status)
             
-        }
-        print(subsriptiondetails)
+            addpayment = payment()
+            addpayment.member=signup.objects.get(id=member)
+            addpayment.membershiptype=membershiptype.objects.get(id=membershiptypes)
+            addpayment.price=price
+            addpayment.payment_date=payment_date
+            addpayment.payment_status=payment_status
+            
+            addpayment.save()
+            
+    
+            return JsonResponse({"message":"Payment successfully."}, status=201)
+        except payment.DoesNotExist:
+            return JsonResponse({"error": "data not found."}, status=404)
+
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+    
         
-        return JsonResponse(subsriptiondetails,safe=False)
+    elif request.method=='GET':
+        try:
+            typedetails = payment.objects.all()
+            serializer = PaymentSerializer(typedetails,many=True)
+            return JsonResponse(serializer.data, safe=False)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            
+
     
 @csrf_exempt
 def getpayment(request,data=0):

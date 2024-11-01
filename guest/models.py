@@ -123,4 +123,12 @@ class membershipsubscription(models.Model):
   
     def _str_(self):
         return self.duration
+    
+class payment(models.Model):
+    payment_id = models.AutoField(primary_key=True)
+    member=models.ForeignKey(signup, on_delete=models.CASCADE)
+    membershiptype= models.ForeignKey(membershiptype, on_delete=models.CASCADE) 
+    price= models.FloatField()
+    payment_date= models.DateField() 
+    payment_status = models.CharField(max_length=100)  
   

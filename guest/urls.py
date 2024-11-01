@@ -27,7 +27,7 @@ urlpatterns = [
   path('annualreport/<data>',views.annualreports,name='annualreport'),
   path('update_annualreport/<data>',views.updateannualreport,name='updateannualreport'),
   path('signup',views.signupp, name='signup'),
-  path('subscription/<data>',views.subscription, name='subscription'),
+  # path('subscription/<data>',views.subscription, name='subscription'),
   path('addmembershiptype',views.addmembershiptype, name='addmembershiptype'),
   path('addmembershiptype/<data>',views.addmembershiptype, name='addmembershiptype'),
   path('update_membershiptype/<data>',views.updatemembershiptype,name='updatemembershiptype'),
@@ -37,6 +37,7 @@ urlpatterns = [
   path('addeventtype',views.addeventtype, name='addeventtype'),
   path('addeventtype/<data>',views.addeventtype, name='addeventtype'),
   path('update_eventtype/<data>',views.updateeventtype,name='updateeventtype'),
+  path('addpayment',views.addpayment, name='addpayment'),
   path('getpayment/<data>',views.getpayment, name='getpayment')
   
 ]

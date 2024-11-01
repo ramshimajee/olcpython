@@ -86,7 +86,7 @@ DATABASES = {
 }
 import dj_database_url
 
-DATABASES['default'] = dj_database_url.parse('mysql://root@localhost/olcdb')
+DATABASES['default'] = dj_database_url.parse('mysql://root:password@localhost/olcdb')
 
 
 # Password validation

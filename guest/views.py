@@ -711,22 +711,22 @@ def signupp(request, data=0):
             
             registereddate=timezone.now().date()
     
-            print(displayname)
-            print(state)
-            print(districtid)
-            print(firstname)
-            print(lastname)
-            print(affiliation)
-            print(Linkedln)
-            print(biography)
-            print(ORCID)
-            print(registereddate)
-            print(email)
-            print(password)
+            # print(displayname)
+            # print(state)
+            # print(districtid)
+            # print(firstname)
+            # print(lastname)
+            # print(affiliation)
+            # print(Linkedln)
+            # print(biography)
+            # print(ORCID)
+            # print(registereddate)
+            # print(email)
+            # print(password)
             
               # Check the already exist of email and contact
-            if signup.objects.filter(ORCID=ORCID).exists():
-                return JsonResponse({"message": "User Already Exist!."}, status=400)
+            if subscribe.objects.filter(email=email).exists():
+                return JsonResponse({"success":False})
             
             # Create a new Login entry for the user
             subscribereg = subscribe()
@@ -745,13 +745,21 @@ def signupp(request, data=0):
             signupreg.affiliation=affiliates.objects.get(id=affiliation)
             signupreg.Linkedln=Linkedln
             signupreg.biography=biography
-            signupreg.ORCID=ORCID
+            if ORCID:
+                signupreg.ORCID=ORCID
+            else:
+                signupreg.ORCID = 0
             signupreg.registereddate=registereddate
             signupreg.subscribe=subscribe.objects.get(id=subscribereg.id)
             
             signupreg.save()
+
+            subscribeObj = signup.objects.last()
+            subscribreid = subscribeObj.subscribe_id
             
-            return JsonResponse({"message": "registration uploaded successfully."}, status=201)
+            
+            
+            return JsonResponse({"success":True,"id":subscribreid}, status=201)
         except signup.DoesNotExist:
             return JsonResponse({"error":"data not found"},status=404)
         except Exception as e:
@@ -1021,19 +1029,7 @@ def updateeventtype(request, data):
             return JsonResponse({"error": str(e)}, status=500)
     return JsonResponse({"error": "Invalid request."}, status=400) 
 
-# @csrf_exempt
-# def subscription(request,data=0):
-#     if request.method=="POST":
-#         email=request.POST.get('email')
-#         password=request.POST.get('password')
-#         subscribeModel = subscribe.objects.filter(email=email,password=password)
-#         if subscribeModel.exists():
-#             for item in subscribeModel:
-#                 id=item.id
-#             print(id)
-#             return JsonResponse({"success":True,"id":id})
-#         else:
-#             return JsonResponse({"success":False})
+
         
         
        

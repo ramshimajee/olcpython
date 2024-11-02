@@ -1,7 +1,15 @@
 from django.db import models
 
+class country(models.Model):
+    countryid = models.AutoField(primary_key=True)
+    countryname = models.CharField(max_length=50)
+    
+    def __str__(self):
+        return self.countryname
+
 class states(models.Model):
     stateid = models.AutoField(primary_key=True)
+    country=models.ForeignKey(country, on_delete=models.CASCADE)
     statename = models.CharField(max_length=50)
     
     def __str__(self):
@@ -9,6 +17,7 @@ class states(models.Model):
     
 class district(models.Model):
     districtid = models.AutoField(primary_key=True)
+    country=models.ForeignKey(country, on_delete=models.CASCADE)
     state = models.ForeignKey(states, on_delete=models.CASCADE)
     districtname = models.CharField(max_length=100)
     
@@ -93,20 +102,16 @@ class subscribe(models.Model):
     
     
 class signup(models.Model):
-    displayname = models.CharField(max_length=100)
+    country=models.ForeignKey(country, on_delete=models.CASCADE)
     state=models.ForeignKey(states, on_delete=models.CASCADE)
     district=models.ForeignKey(district,  on_delete=models.CASCADE)
-    firstname =models.CharField(max_length=100)
-    lastname =models.CharField(max_length=100)
+    institution=models.ForeignKey(institution, on_delete=models.CASCADE)
     affiliation = models.ForeignKey(affiliates, on_delete=models.CASCADE)
-    Linkedln =models.CharField(max_length=50)
-    biography=models.TextField()
-    ORCID = models.BigIntegerField()
     registereddate =models.DateTimeField()
     subscribe=models.ForeignKey(subscribe, on_delete=models.CASCADE)
     
     def _str_(self):
-        return self.displayname
+        return self.country
     
 class membershiptype(models.Model):
     membershiptypename = models.CharField(max_length=100)

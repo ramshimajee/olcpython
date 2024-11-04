@@ -13,15 +13,95 @@ from django.contrib import messages
  
 
 @csrf_exempt
-def state(request):
+def countrys(request):
     if request.method == 'GET':
         try:
-           getstates=states.objects.all()
-           serializer=stateSerializer(getstates,many=True)
+           getcountry=country.objects.all()
+           serializer=CountrySerializer(getcountry,many=True)
            return JsonResponse(serializer.data,safe=False,status=200)
         except Exception as e:
             return JsonResponse({"error":str(e)},status=500)
     return JsonResponse({"Data not found"}, status=404)
+
+@csrf_exempt
+def state(request,data=0):
+    if request.method=='POST':
+        try:
+            countryid = request.POST.get('countryid')
+            statename = request.POST.get('statename')
+            print(countryid )
+            print( statename)
+            countryid =country.objects.get(countryid=countryid)
+            
+            statereg =states( countryid=countryid,statename=statename)
+            
+            statereg.save()
+            
+    
+            return JsonResponse({"message":"State added successfully."}, status=201)
+        except country.DoesNotExist:
+            return JsonResponse({"error": "data not found."}, status=404)
+
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+    
+    elif request.method =='GET':
+        statedetails = states.objects.select_related('country').all()
+        serializer =  stateSerializer( statedetails, many=True)
+        print(serializer)
+     
+        return JsonResponse(serializer.data, safe=False)
+    
+    elif request.method=='DELETE':
+        print(data)
+        statedetails=states.objects.get(stateid = data)
+        print(statedetails)
+        statedetails.delete()
+        return JsonResponse ("Deleted Successfully", safe=False)
+    return JsonResponse ({"error":"invalid request"},status=400) 
+
+@csrf_exempt 
+def updatestate(request, data):
+    if request.method == 'GET':
+        try:
+            statedata = states.objects.select_related("country").get(stateid=data)
+            print("hello")
+            serializer= stateSerializer(statedata)
+            
+            return JsonResponse(serializer.data,safe=False)
+        except states.DoesNotExist:
+            return JsonResponse({'error':'state not found'}, status=404)
+        
+    elif request.method == 'POST':
+        try:
+            # Retrieve the existing data based on the provided id  
+            statedata = states.objects.get(stateid=data)
+            
+            # Get updated data from the request   
+            countryid = request.POST.get('countryid')
+            print(countryid)
+            statename = request.POST.get('statename')
+            print(statename)
+           
+           
+            
+            # Update data if provided
+            if countryid:
+                statedata.country_id = countryid
+            if statename:
+                statedata.statename = statename
+                     
+            # Save the updated data  
+            statedata.save()  
+            
+            return JsonResponse({"message": "state updated successfully."}, status=200)
+        except states.DoesNotExist:
+            return JsonResponse({"error": "state not found."}, status=404)
+
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+    return JsonResponse({"error": "Invalid request."}, status=400) 
+
 
 @csrf_exempt
 def districts(request,data=0):

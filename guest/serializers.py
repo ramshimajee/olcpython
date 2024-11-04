@@ -1,11 +1,17 @@
 from rest_framework import serializers
-from guest.models import   affiliates, annualreport, boardmembers, bylawtable, district, events, eventtype, institution, membershipsubscription, membershiptype, payment, signup, states
+from guest.models import   affiliates, annualreport, boardmembers, bylawtable, country, district, events, eventtype, institution, membershipsubscription, membershiptype, payment, signup, states
 
+class CountrySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = country
+        fields = '__all__'
 class stateSerializer(serializers.ModelSerializer):
+    country=CountrySerializer()
     class Meta:
         model = states
         fields = '__all__'
 class districtSerializer(serializers.ModelSerializer):
+    country=CountrySerializer()
     state=stateSerializer()
     class Meta:
         model = district

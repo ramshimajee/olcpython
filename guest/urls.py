@@ -3,7 +3,10 @@ from guest import views
 
 # urls pattern
 urlpatterns = [
+  path('country',views.countrys, name='country'),
   path('state',views.state, name='state'),
+  path('state/<data>',views.state, name='state'),
+  path('update_state/<data>',views.updatestate,name='updatestate'),
   path('district',views.districts, name='district'),
   path('district/<data>',views.districts, name='district'),
   path('update_district/<data>',views.updatedistrict,name='updatedistrict'),

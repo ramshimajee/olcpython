@@ -33,7 +33,7 @@ def state(request,data=0):
             print( statename)
             countryid =country.objects.get(countryid=countryid)
             
-            statereg =states( countryid=countryid,statename=statename)
+            statereg =states( country=countryid,statename=statename)
             
             statereg.save()
             
@@ -60,10 +60,21 @@ def state(request,data=0):
         return JsonResponse ("Deleted Successfully", safe=False)
     return JsonResponse ({"error":"invalid request"},status=400) 
 
+@csrf_exempt
+def getstatebycountry(request, data):
+    if request.method == 'GET':
+        statedata=states.objects.select_related('country').filter(country=data)
+        serializer= stateSerializer(statedata,many=True)
+            
+        return JsonResponse(serializer.data,safe=False)
+        
+        
+
 @csrf_exempt 
 def updatestate(request, data):
     if request.method == 'GET':
         try:
+            print(data)
             statedata = states.objects.select_related("country").get(stateid=data)
             print("hello")
             serializer= stateSerializer(statedata)
@@ -107,13 +118,16 @@ def updatestate(request, data):
 def districts(request,data=0):
     if request.method=='POST':
         try:
+            countryid= request.POST.get('countryid')
             state = request.POST.get('stateid')
             districtname = request.POST.get('districtname')
+            print(countryid)
             print(state )
             print( districtname)
+            countryid=country.objects.get(countryid=countryid)
             stateid	=states.objects.get(stateid=state)
             
-            districtreg = district( state=stateid	, districtname=districtname)
+            districtreg = district(country=countryid,state=stateid,districtname=districtname)
             
             districtreg.save()
             
@@ -126,7 +140,7 @@ def districts(request,data=0):
             return JsonResponse({"error": str(e)}, status=500)
     
     elif request.method =='GET':
-        districtdetails = district.objects.select_related('state').all()
+        districtdetails = district.objects.select_related('country','state').all()
         serializer = districtSerializer(districtdetails, many=True)
         print(serializer)
      
@@ -144,7 +158,7 @@ def districts(request,data=0):
 def updatedistrict(request, data):
     if request.method == 'GET':
         try:
-            districtdata = district.objects.select_related("state").get(districtid=data)
+            districtdata = district.objects.select_related("country","state").get(districtid=data)
             print("hello")
             serializer= districtSerializer(districtdata)
             
@@ -157,7 +171,9 @@ def updatedistrict(request, data):
             # Retrieve the existing data based on the provided id  
             districtdata = district.objects.get(districtid=data)
             
-            # Get updated data from the request   
+            # Get updated data from the request (
+            countryid=request.POST.get('countryid')
+            print(countryid) 
             stateid = request.POST.get('stateid')
             print(stateid)
             districtname = request.POST.get('districtname')
@@ -166,6 +182,8 @@ def updatedistrict(request, data):
            
             
             # Update data if provided
+            if countryid:
+                districtdata.country_id = countryid
             if stateid:
                 districtdata.state_id = stateid
             if districtname:
@@ -777,15 +795,11 @@ def updateannualreport(request, data):
 def signupp(request, data=0):
     if request.method == 'POST':
         try:
-            displayname = request.POST.get('displayname')
+            country= request.POST.get('countryid')
             state= request.POST.get('stateid')
             districtid= request.POST.get('districtid')
-            firstname= request.POST.get('firstname')
-            lastname= request.POST.get('lastname')
+            institution= request.POST.get('institution')
             affiliation= request.POST.get('affiliation')
-            Linkedln= request.POST.get('Linkedln')
-            biography = request.POST.get('biography')
-            ORCID = request.POST.get('ORCID')
             email = request.POST.get('email')
             password = request.POST.get('password')
             
@@ -817,18 +831,11 @@ def signupp(request, data=0):
             subscribereg.save() 
             # print(subscribereg.id)
             signupreg = signup()
-            signupreg.displayname=displayname
+            signupreg.country=states.objects.get(countryid=country)
             signupreg.state=states.objects.get(stateid=state)
             signupreg.district=district.objects.get(districtid=districtid)
-            signupreg.firstname=firstname
-            signupreg.lastname=lastname
+            signupreg.institution=affiliates.objects.get(id=institution)
             signupreg.affiliation=affiliates.objects.get(id=affiliation)
-            signupreg.Linkedln=Linkedln
-            signupreg.biography=biography
-            if ORCID:
-                signupreg.ORCID=ORCID
-            else:
-                signupreg.ORCID = 0
             signupreg.registereddate=registereddate
             signupreg.subscribe=subscribe.objects.get(id=subscribereg.id)
             

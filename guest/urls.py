@@ -41,6 +41,7 @@ urlpatterns = [
   path('addeventtype/<data>',views.addeventtype, name='addeventtype'),
   path('update_eventtype/<data>',views.updateeventtype,name='updateeventtype'),
   path('addpayment',views.addpayment, name='addpayment'),
-  path('getpayment/<data>',views.getpayment, name='getpayment')
+  path('getpayment/<data>',views.getpayment, name='getpayment'),
+  path('getstatebycountry/<data>',views.getstatebycountry, name='getstatebycountry')
   
 ]

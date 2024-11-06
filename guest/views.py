@@ -164,7 +164,7 @@ def updatedistrict(request, data):
             
             return JsonResponse(serializer.data,safe=False)
         except district.DoesNotExist:
-            return JsonResponse({'error': 'district not found'}, status=404)
+            return JsonResponse({'error':'district not found'}, status=404)
         
     elif request.method == 'POST':
         try:

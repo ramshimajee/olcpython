@@ -50,6 +50,9 @@ class boardmembers(models.Model):
 class institution(models.Model):
     institutionname = models.CharField(max_length=100)
     institutionlink= models.CharField(max_length=100)
+    countrys = models.ForeignKey(country,on_delete=models.CASCADE)
+    state = models.ForeignKey(states,on_delete=models.CASCADE)
+    districts = models.ForeignKey(district,on_delete=models.CASCADE)
     
     def _str_(self):
         return self.institutionname
@@ -106,7 +109,7 @@ class signup(models.Model):
     state=models.ForeignKey(states, on_delete=models.CASCADE)
     district=models.ForeignKey(district,  on_delete=models.CASCADE)
     institution=models.ForeignKey(institution, on_delete=models.CASCADE)
-    affiliation = models.ForeignKey(affiliates, on_delete=models.CASCADE)
+    library = models.CharField(max_length=50)
     registereddate =models.DateTimeField()
     subscribe=models.ForeignKey(subscribe, on_delete=models.CASCADE)
     

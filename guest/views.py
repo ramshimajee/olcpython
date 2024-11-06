@@ -409,10 +409,15 @@ def institutions(request, data=0):
         try:
             institutionname = request.POST.get('institutionname')
             institutionlink = request.POST.get('institutionlink')
-            print(institutionname)
-            print(institutionlink)
+            institution_district = request.POST.get('districtid')
+            institution_state = request.POST.get('stateid')
+            institution_country = request.POST.get('countryid')
             
-            addinstitution = institution(institutionname=institutionname, institutionlink=institutionlink)
+            districtId = district.objects.get(districtid=institution_district)
+            stateId = states.objects.get(stateid=institution_state)
+            countryId = country.objects.get(countryid=institution_country)
+            
+            addinstitution = institution(institutionname=institutionname, institutionlink=institutionlink,districts=districtId,countrys=countryId,state=stateId)
             
             addinstitution.save()
             
@@ -463,13 +468,23 @@ def updateinstitution(request, data):
             print(institutionname)  
             institutionlink = request.POST.get('institutionlink')
             print(institutionlink)
+            institution_district = request.POST.get('districtid')
+            institution_state = request.POST.get('stateid')
+            institution_country = request.POST.get('countryid')
+            
+            districtId = district.objects.get(districtid=institution_district)
+            stateId = states.objects.get(stateid=institution_state)
+            countryId = country.objects.get(countryid=institution_country)
+            
            
             # Update data if provided
             if institutionname :
                 institutiondata.institutionname  = institutionname 
             if institutionlink:
                 institutiondata.institutionlink = institutionlink
-                     
+            institutiondata.countrys = countryId
+            institutiondata.state = stateId
+            institutiondata.districts = districtId         
             # Save the updated data  
             institutiondata.save()  
             
@@ -795,11 +810,11 @@ def updateannualreport(request, data):
 def signupp(request, data=0):
     if request.method == 'POST':
         try:
-            country= request.POST.get('countryid')
+            countrys= request.POST.get('countryid')
             state= request.POST.get('stateid')
             districtid= request.POST.get('districtid')
-            institution= request.POST.get('institution')
-            affiliation= request.POST.get('affiliation')
+            institutions = request.POST.get('institution')
+            libraryname= request.POST.get('libraryname')
             email = request.POST.get('email')
             password = request.POST.get('password')
             
@@ -831,11 +846,11 @@ def signupp(request, data=0):
             subscribereg.save() 
             # print(subscribereg.id)
             signupreg = signup()
-            signupreg.country=states.objects.get(countryid=country)
+            signupreg.country=country.objects.get(countryid=countrys)
             signupreg.state=states.objects.get(stateid=state)
             signupreg.district=district.objects.get(districtid=districtid)
-            signupreg.institution=affiliates.objects.get(id=institution)
-            signupreg.affiliation=affiliates.objects.get(id=affiliation)
+            signupreg.institution=institution.objects.get(id=institutions)
+            signupreg.library=libraryname
             signupreg.registereddate=registereddate
             signupreg.subscribe=subscribe.objects.get(id=subscribereg.id)
             
@@ -1181,4 +1196,13 @@ def getpayment(request,data=0):
         }
         return JsonResponse(subsriptiondetails,safe=False)
     
-    
+@csrf_exempt
+def getinstitutionbyDistrict(request,data=0):
+    if request.method == "GET":
+        # try:
+            
+            institution_list = institution.objects.filter(districts_id=data)
+            serializer = InstitutionSerializer(institution_list,many=True)
+            return JsonResponse(serializer.data,safe=False)
+        # except Exception as e:
+        #     return JsonResponse({"error":str(e)},status=500)

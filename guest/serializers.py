@@ -25,6 +25,9 @@ class BoardSerializer(serializers.ModelSerializer):
         model = boardmembers
         fields = '__all__'
 class InstitutionSerializer(serializers.ModelSerializer):
+    districts = districtSerializer()
+    state = stateSerializer()
+    countrys = CountrySerializer()
     class Meta:
         model = institution
         fields = '__all__'
@@ -40,7 +43,7 @@ class AnnualreportSerializer(serializers.ModelSerializer):
 class SignupSerializer(serializers.ModelSerializer):
     state=stateSerializer()
     district=districtSerializer()
-    affiliation=AffiliatesSerializer()
+    
     class Meta:
         model = signup
         fields = '__all__'

@@ -86,7 +86,7 @@ DATABASES = {
 }
 import dj_database_url
 
-DATABASES['default'] = dj_database_url.parse('mysql://root@localhost/olcdb')
+DATABASES['default'] = dj_database_url.parse('mysql://root:password@localhost/olcdb')
 
 
 # Password validation
@@ -135,3 +135,12 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_ALL_HEADERS=True
+
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'publishingolc@gmail.com'
+EMAIL_HOST_PASSWORD = 'gfeqtzrogsrtmohx'

@@ -9,8 +9,9 @@ from guest.serializers import *
 from rest_framework import status
 from olc import settings
 from django.contrib import messages
-
- 
+from django.core.mail import send_mail
+from dateutil.relativedelta import relativedelta
+from datetime import datetime
 
 @csrf_exempt
 def countrys(request):
@@ -1140,7 +1141,7 @@ def updateeventtype(request, data):
 @csrf_exempt
 def addpayment(request, data=0):
     if request.method=='POST':
-        try:
+        # try:
             member = request.POST.get('member')
             membershiptypes = request.POST.get('membershiptype')
             price = request.POST.get('price')
@@ -1153,7 +1154,7 @@ def addpayment(request, data=0):
             print(payment_status)
             
             addpayment = payment()
-            addpayment.member=signup.objects.get(id=member)
+            addpayment.member=signup.objects.get(subscribe_id=member)
             addpayment.membershiptype=membershiptype.objects.get(id=membershiptypes)
             addpayment.price=price
             addpayment.payment_date=payment_date
@@ -1163,11 +1164,11 @@ def addpayment(request, data=0):
             
     
             return JsonResponse({"message":"Payment successfully."}, status=201)
-        except payment.DoesNotExist:
-            return JsonResponse({"error": "data not found."}, status=404)
+        # except payment.DoesNotExist:
+        #     return JsonResponse({"error": "data not found."}, status=404)
 
-        except Exception as e:
-            return JsonResponse({"error": str(e)}, status=500)
+        # except Exception as e:
+        #     return JsonResponse({"error": str(e)}, status=500)
     
         
     elif request.method=='GET':
@@ -1206,3 +1207,53 @@ def getinstitutionbyDistrict(request,data=0):
             return JsonResponse(serializer.data,safe=False)
         # except Exception as e:
         #     return JsonResponse({"error":str(e)},status=500)
+
+@csrf_exempt
+def sendEmail(request):
+    if request.method == "POST":
+        
+        email = request.POST.get('email')
+        membership_id = request.POST.get('membershipid')
+        print(email)
+        print(membership_id)  
+        dateToday = datetime.today().date()
+        membershipModel = membershiptype.objects.get(id=membership_id)
+        membershipName = membershipModel.membershiptypename
+        membershipModelNew = membershipsubscription.objects.get(membershiptype_id=membership_id)
+        membershipDuration = membershipModelNew.duration
+        try:
+            if membershipDuration == 6:
+                duration = '6 Months'
+                validityDate = dateToday + relativedelta(months=+6)
+            elif membershipDuration == 1:  
+                duration = '1 Year'
+                validityDate = dateToday + relativedelta(years=+1)
+            elif membershipDuration == 2:  
+                duration = '2 Years'
+                validityDate = dateToday + relativedelta(years=+2)
+            else:
+                duration = 'None'
+                validityDate = None  
+        except membershipsubscription.DoesNotExist:
+            return JsonResponse({"success": False, "message": "Membership type not found."}, status=404)
+
+        if email:
+            print(duration)
+            print(validityDate)
+            subject = "Subscription Successful"
+            message = f"Thank you for subscribing! Your subscription is successful. \n\n" \
+                      f"Your membership type is: {membershipName} \n\n" \
+                      f"Duration of Your Membership is {duration} \n\n" \
+                      f"Validity Expires on {validityDate}"
+            from_email = 'publishingolc@gmail.com'  # Sender's email address
+            recipient_list = [email]  # Recipient's email address
+            
+            try:
+                # Send the email
+                send_mail(subject, message, from_email, recipient_list)
+                return JsonResponse({"success": True, "message": "Subscription successful, confirmation email sent."}, status=201)
+            except Exception as e:
+                return JsonResponse({"success": False, "message": str(e)}, status=400)
+        
+        else:
+            return JsonResponse({"success": False, "message": "Email address is required."}, status=400)

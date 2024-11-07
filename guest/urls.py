@@ -43,7 +43,8 @@ urlpatterns = [
   path('addpayment',views.addpayment, name='addpayment'),
   path('getpayment/<data>',views.getpayment, name='getpayment'),
   path('getstatebycountry/<data>',views.getstatebycountry, name='getstatebycountry'),
-  path('getinstitutionbyDistrict/<data>',views.getinstitutionbyDistrict,name="getinstitutionbyDistrict")
+  path('getinstitutionbyDistrict/<data>',views.getinstitutionbyDistrict,name="getinstitutionbyDistrict"),
+  path('sendemail',views.sendEmail,name="sendemail")
   
   
 ]
